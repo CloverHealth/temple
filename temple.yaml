@@ -1,0 +1,7 @@
+_extensions: [jinja2_time.TimeExtension]
+_template: git@github.com:CloverHealth/temple-python-public.git
+_version: bd63ad99e42f9979b31d9a5bbd6d30dc5abef802
+deploy_branch: master
+module_name: temple
+repo_name: temple
+short_description: Templated project management
