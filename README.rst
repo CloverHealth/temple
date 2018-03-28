@@ -75,3 +75,10 @@ For information on setting up temple for development and contributing changes, v
 .. _cookiecutter: https://cookiecutter.readthedocs.io/en/latest/
 .. _cookiecutter hooks: http://cookiecutter.readthedocs.io/en/latest/advanced/hooks.html
 
+Primary Authors
+===============
+
+- @wesleykendall (Wes Kendall)
+- @gwax (George Leslie-Waksman)
+
+Other contributors can be found in the AUTHORS file
