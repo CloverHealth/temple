@@ -1,0 +1,3 @@
+# A requirement file specifically for RTD.org doc building
+-r requirements.txt
+-r dev_requirements.txt
