@@ -58,7 +58,7 @@ default_role = 'any'
 
 # General information about the project.
 project = 'temple'
-copyright = '2017, Clover Health'
+copyright = '2018, Clover Health'
 author = 'Clover Health'
 
 # The version info for the project you're documenting, acts as replacement for
