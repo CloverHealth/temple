@@ -106,7 +106,7 @@ def ls(github_user, template=None):
 
     if template:
         temple.check.is_git_ssh_path(template)
-        search_q = 'user:{} {} in:path "{}" in:file'.format(
+        search_q = 'user:{} filename:{} {}'.format(
             github_user,
             temple.constants.TEMPLE_CONFIG_FILE,
             template)
