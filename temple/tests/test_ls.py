@@ -107,7 +107,7 @@ def test_code_search_invalid_github_user(mocker, responses):
 
 @pytest.mark.parametrize('template, github_query', [
     (None, 'user:u cookiecutter.json in:path'),
-    ('git@github.com:u/t.git', 'user:u temple.yaml in:path "git@github.com:u/t.git" in:file'),
+    ('git@github.com:u/t.git', 'user:u filename:temple.yaml git@github.com:u/t.git'),
 ])
 def test_ls(template, github_query, mocker):
     mock_code_search = mocker.patch('temple.ls._code_search', autospec=True, return_value={
