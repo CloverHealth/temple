@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+1.4.4
+-----
+
+* [DI-304] Fix search for template usage (#7)
+
 1.4.3
 -----
 
