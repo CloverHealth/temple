@@ -87,6 +87,7 @@ deactivate_pyenv:
 # Builds all dependencies for a project
 .PHONY: dependencies
 dependencies:
+	${PIP_INSTALL_CMD} -U 'pip<19.2'
 	${PIP_INSTALL_CMD} -U -r dev_requirements.txt  # Use -U to ensure requirements are upgraded every time
 	${PIP_INSTALL_CMD} -r test_requirements.txt
 	${PIP_LOCAL_INSTALL_CMD}
