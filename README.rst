@@ -26,7 +26,7 @@ temple can be installed with::
 Most temple functionality requires a ``GITHUB_API_TOKEN`` environment variable to be set.
 The Github API token is a personal token that you create
 by following the `Github Access Token Instructions`_.
-This token only requires ``repo`` scope.
+This token only requires ``repo`` scope. Also remember to enable SSO for your token. 
 
 .. _Github Access Token Instructions: https://help.github.com/articles/creating-an-access-token-for-command-line-use/
 
