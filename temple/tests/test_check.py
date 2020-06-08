@@ -25,7 +25,7 @@ def test_is_git_ssh_path_invalid(invalid_template_path):
 
 
 @pytest.mark.parametrize('revparse_returncode', [
-    pytest.mark.xfail(255, raises=temple.exceptions.NotInGitRepoError),
+    pytest.param(255, marks=pytest.mark.xfail(raises=temple.exceptions.NotInGitRepoError)),
     0,
 ])
 def test_in_git_repo(revparse_returncode, mocker):
@@ -40,7 +40,7 @@ def test_in_git_repo(revparse_returncode, mocker):
 
 @pytest.mark.parametrize('revparse_returncode', [
     255,
-    pytest.mark.xfail(0, raises=temple.exceptions.InGitRepoError),
+    pytest.param(0, marks=pytest.mark.xfail(raises=temple.exceptions.InGitRepoError)),
 ])
 def test_not_in_git_repo(revparse_returncode, mocker):
     """Tests temple.check.not_in_git_repo"""
@@ -54,7 +54,7 @@ def test_not_in_git_repo(revparse_returncode, mocker):
 
 @pytest.mark.parametrize('revparse_returncode', [
     0,
-    pytest.mark.xfail(255, raises=temple.exceptions.InDirtyRepoError),
+    pytest.param(255, marks=pytest.mark.xfail(raises=temple.exceptions.InDirtyRepoError)),
 ])
 def test_in_clean_repo(revparse_returncode, mocker):
     """Tests temple.check.in_clean_repo"""
@@ -68,7 +68,7 @@ def test_in_clean_repo(revparse_returncode, mocker):
 
 @pytest.mark.parametrize('revparse_returncode', [
     128,
-    pytest.mark.xfail(0, raises=temple.exceptions.ExistingBranchError),
+    pytest.param(0, marks=pytest.mark.xfail(raises=temple.exceptions.ExistingBranchError)),
 ])
 def test_not_has_branch(revparse_returncode, mocker):
     """Tests temple.check.not_has_branch"""
@@ -84,9 +84,9 @@ def test_not_has_branch(revparse_returncode, mocker):
 
 
 @pytest.mark.parametrize('envvar_names, check_envvar_names', [
-    pytest.mark.xfail((['v1', 'v2'], ['v2', 'v3']),
-                      raises=temple.exceptions.InvalidEnvironmentError),
-    pytest.mark.xfail(([], ['v2']), raises=temple.exceptions.InvalidEnvironmentError),
+    pytest.param(['v1', 'v2'], ['v2', 'v3'],
+                 marks=pytest.mark.xfail(raises=temple.exceptions.InvalidEnvironmentError)),
+    pytest.param([], ['v2'], marks=pytest.mark.xfail(raises=temple.exceptions.InvalidEnvironmentError)),
     (['v2'], ['v2']),
     (['v1', 'v2'], ['v1', 'v2']),
 ])
@@ -98,7 +98,7 @@ def test_has_env_vars(envvar_names, check_envvar_names, mocker):
 
 
 @pytest.mark.parametrize('temple_file', [
-    pytest.mark.xfail('regular_file', raises=temple.exceptions.InvalidTempleProjectError),
+    pytest.param('regular_file', marks=pytest.mark.xfail(raises=temple.exceptions.InvalidTempleProjectError)),
     temple.constants.TEMPLE_CONFIG_FILE,
 ])
 def test_check_is_temple_project(temple_file, fs):

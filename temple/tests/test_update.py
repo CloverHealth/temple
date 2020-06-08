@@ -14,10 +14,10 @@ import temple.update
     [
         ('{"config": "same"}', '{"config": "same"}', http_codes.ok, http_codes.ok, False),
         ('{"config": "same"}', '{"config": "diff"}', http_codes.ok, http_codes.ok, True),
-        pytest.mark.xfail(('', '', http_codes.not_found, http_codes.ok, None),
-                          raises=requests.exceptions.HTTPError),
-        pytest.mark.xfail(('', '', http_codes.ok, http_codes.not_found, None),
-                          raises=requests.exceptions.HTTPError),
+        pytest.param('', '', http_codes.not_found, http_codes.ok, None,
+                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
+        pytest.param('', '', http_codes.ok, http_codes.not_found, None,
+                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
     ])
 def test_cookiecutter_configs_have_changed(old_config,
                                            new_config,
@@ -46,7 +46,7 @@ def test_cookiecutter_configs_have_changed(old_config,
 
 @pytest.mark.parametrize('http_status', [
     http_codes.ok,
-    pytest.mark.xfail(http_codes.not_found, raises=requests.exceptions.HTTPError),
+    pytest.param(http_codes.not_found, marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
 ])
 def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
     """Tests temple.update._get_latest_template_version_w_git_api"""
@@ -61,7 +61,7 @@ def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
 @pytest.mark.parametrize('stdout, stderr, expected', [
     (b'version\n', b'', 'version'),
     (b'version\n', b'stderr_can_be_there_w_stdout', 'version'),
-    pytest.mark.xfail((b'\n', b'stderr_w_no_stdout_is_an_error', None), raises=RuntimeError),
+    pytest.param(b'\n', b'stderr_w_no_stdout_is_an_error', None, marks=pytest.mark.xfail(raises=RuntimeError)),
 ])
 def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected):
     """Tests temple.update._get_latest_template_version_w_git_ssh"""
@@ -79,16 +79,16 @@ def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected)
 @pytest.mark.parametrize('git_ssh_side_effect, git_api_side_effect, expected', [
     (['version'], None, 'version'),
     (subprocess.CalledProcessError(returncode=1, cmd='cmd'), ['version'], 'version'),
-    pytest.mark.xfail(
-        (subprocess.CalledProcessError(returncode=1, cmd='cmd'),
-         requests.exceptions.RequestException,
-         None),
-        raises=temple.exceptions.CheckRunError),
-    pytest.mark.xfail(
-        (subprocess.CalledProcessError(returncode=1, cmd='cmd'),
-         temple.exceptions.InvalidEnvironmentError,
-         None),
-        raises=temple.exceptions.CheckRunError),
+    pytest.param(
+        subprocess.CalledProcessError(returncode=1, cmd='cmd'),
+        requests.exceptions.RequestException,
+        None,
+        marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
+    pytest.param(
+        subprocess.CalledProcessError(returncode=1, cmd='cmd'),
+        temple.exceptions.InvalidEnvironmentError,
+        None,
+        marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
 ])
 def test_get_latest_template_version(mocker, git_ssh_side_effect, git_api_side_effect, expected):
     mocker.patch('temple.update._get_latest_template_version_w_git_ssh',
