@@ -1,2 +1,2 @@
 """temple"""
-from temple.version import __version__  # flake8: noqa
+from temple.version import __version__  # noqa: F401

@@ -61,7 +61,8 @@ def test_write_temple_config(fs):
 
     with open(temple.constants.TEMPLE_CONFIG_FILE) as config:
         assert set(config.readlines()) == {
-            '_extensions: [jinja2_time.TimeExtension]\n',
+            '_extensions:\n',
+            '- jinja2_time.TimeExtension\n',
             '_template: t\n',
             '_version: version\n',
             'repo_name: repo_name\n',

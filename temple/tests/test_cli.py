@@ -68,7 +68,8 @@ def test_main_no_args(mocker, capsys):
 
 @pytest.mark.usefixtures('mock_exit')
 @pytest.mark.parametrize('version, up_to_date_return', [
-    pytest.mark.xfail((None, False), raises=temple.exceptions.NotUpToDateWithTemplateError),
+    pytest.param(None, False, marks=pytest.mark.xfail(
+        raises=temple.exceptions.NotUpToDateWithTemplateError)),
     (None, True),
     ('version', True),
 ])
