@@ -46,7 +46,8 @@ def test_cookiecutter_configs_have_changed(old_config,
 
 @pytest.mark.parametrize('http_status', [
     http_codes.ok,
-    pytest.param(http_codes.not_found, marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
+    pytest.param(http_codes.not_found,
+                 marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
 ])
 def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
     """Tests temple.update._get_latest_template_version_w_git_api"""
@@ -61,7 +62,8 @@ def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
 @pytest.mark.parametrize('stdout, stderr, expected', [
     (b'version\n', b'', 'version'),
     (b'version\n', b'stderr_can_be_there_w_stdout', 'version'),
-    pytest.param(b'\n', b'stderr_w_no_stdout_is_an_error', None, marks=pytest.mark.xfail(raises=RuntimeError)),
+    pytest.param(b'\n', b'stderr_w_no_stdout_is_an_error', None,
+                 marks=pytest.mark.xfail(raises=RuntimeError)),
 ])
 def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected):
     """Tests temple.update._get_latest_template_version_w_git_ssh"""

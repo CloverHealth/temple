@@ -86,7 +86,8 @@ def test_not_has_branch(revparse_returncode, mocker):
 @pytest.mark.parametrize('envvar_names, check_envvar_names', [
     pytest.param(['v1', 'v2'], ['v2', 'v3'],
                  marks=pytest.mark.xfail(raises=temple.exceptions.InvalidEnvironmentError)),
-    pytest.param([], ['v2'], marks=pytest.mark.xfail(raises=temple.exceptions.InvalidEnvironmentError)),
+    pytest.param([], ['v2'], marks=pytest.mark.xfail(
+        raises=temple.exceptions.InvalidEnvironmentError)),
     (['v2'], ['v2']),
     (['v1', 'v2'], ['v1', 'v2']),
 ])
@@ -98,7 +99,8 @@ def test_has_env_vars(envvar_names, check_envvar_names, mocker):
 
 
 @pytest.mark.parametrize('temple_file', [
-    pytest.param('regular_file', marks=pytest.mark.xfail(raises=temple.exceptions.InvalidTempleProjectError)),
+    pytest.param('regular_file', marks=pytest.mark.xfail(
+        raises=temple.exceptions.InvalidTempleProjectError)),
     temple.constants.TEMPLE_CONFIG_FILE,
 ])
 def test_check_is_temple_project(temple_file, fs):
