@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+1.4.6
+-----
+
+* Attempt to fix build process
+* Fix temple ls command's template param (#10)
+
 1.4.5
 -----
 
