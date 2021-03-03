@@ -1,5 +1,6 @@
 """Utilities for performing checks and throwing useful error messages"""
 import os
+import re
 import subprocess
 
 import temple.constants
@@ -16,6 +17,11 @@ def is_git_ssh_path(template_path):
     if not template_path.startswith('git@github.com:') or not template_path.endswith('.git'):
         raise temple.exceptions.InvalidTemplatePathError(
             'The template path must be a git SSH url (e.g. "git@github.com:user/template.git")')
+
+
+def get_name_from_ssh_path(template_path):
+    matches = re.search(r"\/([^/]+)\.git$", template_path)
+    return matches[1]
 
 
 def _in_git_repo():
