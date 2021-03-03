@@ -6,8 +6,7 @@ import pytest
 import requests
 
 import temple.exceptions
-from temple import constants
-from temple import ls
+from temple import constants, ls
 
 
 @pytest.mark.parametrize('headers, expected_links', [
@@ -107,7 +106,7 @@ def test_code_search_invalid_github_user(mocker, responses):
 
 @pytest.mark.parametrize('template, github_query', [
     (None, 'user:u cookiecutter.json in:path'),
-    ('git@github.com:u/t.git', 'user:u filename:temple.yaml git@github.com:u/t.git'),
+    ('git@github.com:u/t.git', 'user:u filename:temple.yaml t'),
 ])
 def test_ls(template, github_query, mocker):
     mock_code_search = mocker.patch('temple.ls._code_search', autospec=True, return_value={

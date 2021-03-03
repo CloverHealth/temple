@@ -13,6 +13,12 @@ def test_is_git_ssh_path_valid():
     temple.check.is_git_ssh_path('git@github.com:user/template.git')
 
 
+def test_get_name_from_ssh_path():
+    assert temple.check.get_name_from_ssh_path('git@github.com:user/template.git') == "template"
+    assert temple.check.get_name_from_ssh_path('git@github.com:user/foo-bar.git') == "foo-bar"
+    assert temple.check.get_name_from_ssh_path('git@github.com:user/foo_bar1.git') == "foo_bar1"
+
+
 @pytest.mark.parametrize('invalid_template_path', [
     'bad_path',
     'git@github.com:user/template',
