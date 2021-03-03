@@ -21,7 +21,7 @@ def is_git_ssh_path(template_path):
 
 def get_name_from_ssh_path(template_path):
     matches = re.search(r"\/([^/]+)\.git$", template_path)
-    return matches[1]
+    return matches.group(1)
 
 
 def _in_git_repo():
