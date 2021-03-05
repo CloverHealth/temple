@@ -54,7 +54,7 @@ def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
     api = 'https://api.github.com/repos/owner/template/commits'
     responses.add(responses.GET, api, json=[{'sha': 'v1'}], status=http_status)
 
-    latest = temple.update._get_latest_template_version_w_git_api(
+    latest = temple.update._get_latest_template_version_w_github(
         'git@github.com:owner/template.git')
     assert latest == 'v1'
 
@@ -73,7 +73,7 @@ def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected)
                               autospec=True,
                               return_value=ls_remote_return)
 
-    assert temple.update._get_latest_template_version_w_git_ssh('t') == expected
+    assert temple.update._get_latest_template_version_w_git('t') == expected
     cmd = 'git ls-remote t | grep HEAD | cut -f1'
     mock_shell.assert_called_once_with(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

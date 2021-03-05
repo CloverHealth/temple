@@ -4,6 +4,7 @@ temple.update
 
 Updates a temple project with the latest template
 """
+import json
 import os
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ import tempfile
 import textwrap
 
 import cookiecutter.main as cc_main
+import cookiecutter.vcs as cc_vcs
 import requests
 
 import temple.check
@@ -32,20 +34,16 @@ def _cookiecutter_configs_have_changed(template, old_version, new_version):
     Returns:
         bool: True if the cookiecutter.json files have been changed in the old and new versions
     """
-    temple.check.is_git_ssh_path(template)
-    repo_path = temple.utils.get_repo_path(template)
-    github_client = temple.utils.GithubClient()
-    api = '/repos/{}/contents/cookiecutter.json'.format(repo_path)
+    with tempfile.TemporaryDirectory() as clone_dir:
+        repo_dir = cc_vcs.clone(template, old_version, clone_dir)
+        old_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
+        subprocess.check_call(f'git checkout {new_version}', cwd=repo_dir, shell=True, stderr=subprocess.PIPE)
+        new_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
 
-    old_config_resp = github_client.get(api, params={'ref': old_version})
-    old_config_resp.raise_for_status()
-    new_config_resp = github_client.get(api, params={'ref': new_version})
-    new_config_resp.raise_for_status()
-
-    return old_config_resp.json()['content'] != new_config_resp.json()['content']
+    return old_config != new_config
 
 
-def _get_latest_template_version_w_git_ssh(template):
+def _get_latest_template_version_w_git(template):
     """
     Tries to obtain the latest template version using an SSH key
     """
@@ -60,7 +58,7 @@ def _get_latest_template_version_w_git_ssh(template):
     return stdout
 
 
-def _get_latest_template_version_w_git_api(template):
+def _get_latest_template_version_w_github(template):
     """Tries to obtain the latest template version with the Github API"""
     temple.check.has_env_vars(temple.constants.GITHUB_API_TOKEN_ENV_VAR)
 
@@ -83,10 +81,10 @@ def _get_latest_template_version(template):
         str: The latest template version
     """
     try:
-        latest_version = _get_latest_template_version_w_git_ssh(template)
+        latest_version = _get_latest_template_version_w_git(template)
     except (subprocess.CalledProcessError, RuntimeError):
         try:
-            latest_version = _get_latest_template_version_w_git_api(template)
+            latest_version = _get_latest_template_version_w_github(template)
         except (requests.exceptions.RequestException,
                 temple.exceptions.InvalidEnvironmentError) as exc:
             raise temple.exceptions.CheckRunError((

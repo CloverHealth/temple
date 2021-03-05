@@ -57,7 +57,6 @@ def setup(template, version=None):
         version (str, optional): The version of the template to use when updating. Defaults
             to the latest version
     """
-    temple.check.is_git_ssh_path(template)
     temple.check.not_in_git_repo()
 
     repo_path = temple.utils.get_repo_path(template)
