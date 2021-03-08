@@ -10,28 +10,38 @@ import temple.update
 
 
 @pytest.mark.parametrize(
-    'old_config, new_config, expected_has_changed',
+    'old_config, new_config, old_http_status, new_http_status, expected_has_changed',
     [
-        ('{"config": "same"}', '{"config": "same"}', False),
-        ('{"config": "same"}', '{"config": "diff"}', True),
+        ('{"config": "same"}', '{"config": "same"}', http_codes.ok, http_codes.ok, False),
+        ('{"config": "same"}', '{"config": "diff"}', http_codes.ok, http_codes.ok, True),
+        pytest.param('', '', http_codes.not_found, http_codes.ok, None,
+                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
+        pytest.param('', '', http_codes.ok, http_codes.not_found, None,
+                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
     ])
 def test_cookiecutter_configs_have_changed(old_config,
                                            new_config,
+                                           old_http_status,
+                                           new_http_status,
                                            expected_has_changed,
                                            mocker,
                                            responses):
     """Tests temple.update._cookiecutter_configs_have_changed"""
-    mock_clone = mocker.patch('temple.update.cc_vcs.clone', autospec=True, return_value='path')
-    mock_open = mocker.patch('temple.update.open')
-    mock_open().read.side_effect = [old_config, new_config]
-    mock_call = mocker.patch('subprocess.check_call', autospec=True)
-    template = 'git@github.com:org/template.git'
+    api = 'https://api.github.com/repos/org/template/contents/cookiecutter.json'
+    responses.add(responses.GET,
+                  '{}?ref=old'.format(api),
+                  json={'content': old_config},
+                  status=old_http_status,
+                  match_querystring=True)
+    responses.add(responses.GET,
+                  '{}?ref=new'.format(api),
+                  json={'content': new_config},
+                  status=new_http_status,
+                  match_querystring=True)
 
+    template = 'git@github.com:org/template.git'
     config_has_changed = temple.update._cookiecutter_configs_have_changed(template, 'old', 'new')
     assert config_has_changed == expected_has_changed
-    mock_clone.assert_called_once_with(template, 'old', mocker.ANY)
-    assert mock_call.call_count == 1
-
 
 @pytest.mark.parametrize('http_status', [
     http_codes.ok,
