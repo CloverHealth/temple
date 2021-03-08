@@ -8,8 +8,6 @@ import requests
 import temple.constants
 import temple.update
 
-import cookiecutter.vcs
-
 
 @pytest.mark.parametrize(
     'old_config, new_config, old_http_status, new_http_status, expected_has_changed',
