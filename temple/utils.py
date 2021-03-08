@@ -128,11 +128,14 @@ class GithubClient():
         return self._call_api('get', url, **request_kwargs)
 
 class GitLabClient():
-    def __init__(self):
+    import base64
+    import json
+    def __init__(self, template):
         self.api_token = os.environ.get('GITLAB_API_TOKEN')
         gitlab_api = 'https://gitlab.com/api/v4'
         self.headers = { 'Authorization': f"Bearer {self.api_token}" }
-        url = f"{gitlab_api}/projects?search=tpgl"
+        query = template.split('/')[-1:]
+        url = f"{gitlab_api}/projects?search={query}"
         search_response = requests.get(url, headers=self.headers)
         search_result = search_response.json()
         if len(search_result) != 1:
@@ -146,12 +149,11 @@ class GitLabClient():
             url, 
             headers={**self.headers, **request_kwargs.pop('headers',{})}, 
             **request_kwargs)
-        whatdis = file_response.json()
-        print(whatdis)
-        return 
+        file_result = file_response.json()
+        return json.loads(base64.b64decode(file_result['content']))
 
 def get_git_client(template='git@github.com:org/repo.git'):
     if 'gitlab' in template:
-        return GitLabClient()
+        return GitLabClient(template)
     else:
         return GithubClient()
