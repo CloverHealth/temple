@@ -8,6 +8,8 @@ import requests
 import temple.constants
 import temple.update
 
+import cookiecutter.vcs
+
 
 @pytest.mark.parametrize(
     'old_config, new_config, old_http_status, new_http_status, expected_has_changed',
@@ -93,9 +95,9 @@ def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected)
         marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
 ])
 def test_get_latest_template_version(mocker, git_ssh_side_effect, git_api_side_effect, expected):
-    mocker.patch('temple.update._get_latest_template_version_w_git_ssh',
+    mocker.patch('temple.update._get_latest_template_version_w_git',
                  autospec=True, side_effect=git_ssh_side_effect)
-    mocker.patch('temple.update._get_latest_template_version_w_git_api',
+    mocker.patch('temple.update._get_latest_template_version_w_github',
                  autospec=True, side_effect=git_api_side_effect)
 
     version = temple.update._get_latest_template_version('template')
