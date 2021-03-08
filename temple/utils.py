@@ -135,9 +135,8 @@ class GitLabClient():
         print(request_kwargs.sha)
         return None
 
-class GitClient():
-    def get(self, template=None):
-        if 'gitlab' in template:
-            return GitLabClient()
-        else:
-            return GithubClient()
+def get_git_client(template='git@github.com:org/repo.git'):
+    if 'gitlab' in template:
+        return GitLabClient()
+    else:
+        return GithubClient()
