@@ -129,9 +129,9 @@ class GithubClient():
 
 class GitLabClient():
     def __init__(self, template):
-        self.api_token = os.environ.get('GITLAB_API_TOKEN')
+        api_token = os.environ.get('GITLAB_API_TOKEN')
         gitlab_api = 'https://gitlab.com/api/v4'
-        self.headers = { 'Authorization': f"Bearer {self.api_token}" }
+        self.headers = { 'Authorization': f"Bearer {api_token}" }
         query = template.split('/')[-1:]
         url = f"{gitlab_api}/projects?search={query}"
         search_response = requests.get(url, headers=self.headers)
