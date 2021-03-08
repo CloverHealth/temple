@@ -35,7 +35,7 @@ def _cookiecutter_configs_have_changed(template, old_version, new_version):
         bool: True if the cookiecutter.json files have been changed in the old and new versions
     """
     repo_path = temple.utils.get_repo_path(template)
-    github_client = temple.utils.GitClient()
+    github_client = temple.utils.GitClient().get(template)
     api = '/repos/{}/contents/cookiecutter.json'.format(repo_path)
     old_config_resp = github_client.get(api, params={'ref': old_version})
     old_config_resp.raise_for_status()
@@ -65,7 +65,7 @@ def _get_latest_template_version_w_github(template):
 
     repo_path = temple.utils.get_repo_path(template)
     api = '/repos/{}/commits'.format(repo_path)
-    github_client = temple.utils.GitClient()
+    github_client = temple.utils.GitClient().get(template)
 
     last_commit_resp = github_client.get(api, params={'per_page': 1})
     last_commit_resp.raise_for_status()

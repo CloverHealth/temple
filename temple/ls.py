@@ -42,7 +42,7 @@ def _code_search(query, github_user=None):
     Raises:
         `InvalidGithubUserError`: When ``github_user`` is invalid
     """
-    github_client = temple.utils.GitClient()
+    github_client = temple.utils.GitClient().get()
     headers = {'Accept': 'application/vnd.github.v3.text-match+json'}
 
     resp = github_client.get('/search/code',

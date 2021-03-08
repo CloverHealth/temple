@@ -127,9 +127,17 @@ class GithubClient():
         """Github API get"""
         return self._call_api('get', url, **request_kwargs)
 
-class GitClient():
-    def __init__(self, auth=None):
-        self.api_token = os.environ[temple.constants.GITHUB_API_TOKEN_ENV_VAR]
-        self.github = GithubClient(auth)
+class GitLabClient():
+    def __init__(self):
+        self.api_token = os.environ.get('GITLAB_API_TOKEN')
+
     def get(self, url, **request_kwargs):
-        return self.github.get(url, **request_kwargs)
+        print(request_kwargs.sha)
+        return None
+
+class GitClient():
+    def get(self, template=None):
+        if 'gitlab' in template:
+            return GitLabClient()
+        else:
+            return GithubClient()
