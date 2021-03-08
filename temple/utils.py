@@ -128,8 +128,6 @@ class GithubClient():
         return self._call_api('get', url, **request_kwargs)
 
 class GitLabClient():
-    import base64
-    import json
     def __init__(self, template):
         self.api_token = os.environ.get('GITLAB_API_TOKEN')
         gitlab_api = 'https://gitlab.com/api/v4'
@@ -145,12 +143,10 @@ class GitLabClient():
 
     def get(self, void, **request_kwargs):
         url = f"{self.file_api}/cookiecutter.json"
-        file_response = requests.get(
+        return requests.get(
             url, 
             headers={**self.headers, **request_kwargs.pop('headers',{})}, 
             **request_kwargs)
-        file_result = file_response.json()
-        return json.loads(base64.b64decode(file_result['content']))
 
 def get_git_client(template='git@github.com:org/repo.git'):
     if 'gitlab' in template:
