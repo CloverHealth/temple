@@ -126,3 +126,10 @@ class GithubClient():
     def get(self, url, **request_kwargs):
         """Github API get"""
         return self._call_api('get', url, **request_kwargs)
+
+class GitClient():
+    def __init__(self, auth=None):
+        self.api_token = os.environ[temple.constants.GITHUB_API_TOKEN_ENV_VAR]
+        self.github = GithubClient(auth)
+    def get(self, url, **request_kwargs):
+        return self.github.get(url, **request_kwargs)

@@ -34,14 +34,15 @@ def _cookiecutter_configs_have_changed(template, old_version, new_version):
     Returns:
         bool: True if the cookiecutter.json files have been changed in the old and new versions
     """
-    with tempfile.TemporaryDirectory() as clone_dir:
-        repo_dir = cc_vcs.clone(template, old_version, clone_dir)
-        old_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
-        subprocess.check_call(f'git checkout {new_version}', cwd=repo_dir, shell=True, stderr=subprocess.PIPE)
-        new_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
+    repo_path = temple.utils.get_repo_path(template)
+    github_client = temple.utils.GitClient()
+    api = '/repos/{}/contents/cookiecutter.json'.format(repo_path)
+    old_config_resp = github_client.get(api, params={'ref': old_version})
+    old_config_resp.raise_for_status()
+    new_config_resp = github_client.get(api, params={'ref': new_version})
+    new_config_resp.raise_for_status()
 
-    return old_config != new_config
-
+    return old_config_resp.json()['content'] != new_config_resp.json()['content']
 
 def _get_latest_template_version_w_git(template):
     """
@@ -64,7 +65,7 @@ def _get_latest_template_version_w_github(template):
 
     repo_path = temple.utils.get_repo_path(template)
     api = '/repos/{}/commits'.format(repo_path)
-    github_client = temple.utils.GithubClient()
+    github_client = temple.utils.GitClient()
 
     last_commit_resp = github_client.get(api, params={'per_page': 1})
     last_commit_resp.raise_for_status()
