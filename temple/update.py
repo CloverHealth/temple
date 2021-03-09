@@ -38,7 +38,7 @@ def _cookiecutter_configs_have_changed(template, old_version, new_version):
         repo_dir = cc_vcs.clone(template, old_version, clone_dir)
         old_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
         subprocess.check_call(
-            f'git checkout {new_version}', cwd=repo_dir, shell=True, stderr=subprocess.PIPE)
+            'git checkout %s' % new_version, cwd=repo_dir, shell=True, stderr=subprocess.PIPE)
         new_config = json.load(open(os.path.join(repo_dir, 'cookiecutter.json')))
 
     return old_config != new_config
