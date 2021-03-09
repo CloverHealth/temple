@@ -139,3 +139,24 @@ def test_set_cmd_env_var():
         assert os.environ[temple.constants.TEMPLE_ENV_VAR] == 'testvalue'
     finally:
         os.environ.pop(temple.constants.TEMPLE_ENV_VAR, None)
+
+@pytest.mark.parametrize('template, api, type',
+    [
+        ('git@github.com:org/repo.git', 'https://api.github.com/', temple.utils.GithubClient),
+        ('https://github.com/org/repo/repo.git', 'https://api.github.com/', temple.utils.GithubClient),
+        ('https://gitlab.com/group/subgroup/project','https://gitlab.com/api/v4/projects', temple.utils.GitLabClient)
+    ])
+def test_get_git_client(template, api, type, responses):
+    responses.add(responses.GET, api, json=[{'id':1}], status=200, match_querystring=False)
+    client = temple.utils.get_git_client(template)
+    assert isinstance(client, type)
+
+@pytest.mark.parametrize('project_search, api, result, expected',
+    [
+        pytest.param('https://gitlab.com/api/v4/projects?search=project', 'https://gitlab.com/api/v4/projects/1/repository/files/cookiecutter.json', [], 200, marks=pytest.mark.xfail(raises=ValueError)),
+        pytest.param('https://gitlab.com/api/v4/projects?search=project', 'https://gitlab.com/api/v4/projects/1/repository/files/cookiecutter.json', [{},{}], 200, marks=pytest.mark.xfail(raises=ValueError))
+    ])
+def test_other_than_one_gitlab_template_problematic(project_search, api, result, expected, responses):
+    responses.add(responses.GET, project_search, json=result, status=200, match_querystring=False)
+    client = temple.utils.GitLabClient(api)
+    assert result == expected

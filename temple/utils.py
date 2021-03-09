@@ -132,13 +132,12 @@ class GitLabClient():
         api_token = os.environ.get('GITLAB_API_TOKEN')
         gitlab_api = 'https://gitlab.com/api/v4'
         self.headers = { 'Authorization': f"Bearer {api_token}" }
-        query = template.split('/')[-1:]
+        query = template.split('/')[-1:][0]
         url = f"{gitlab_api}/projects?search={query}"
         search_response = requests.get(url, headers=self.headers)
         search_result = search_response.json()
         if len(search_result) != 1:
-            print('Template search inconclusive.')
-            exit()
+            raise ValueError('Template search inconclusive.')
         self.file_api = f"{gitlab_api}/projects/{search_result[0]['id']}/repository/files"
 
     def get(self, void, **request_kwargs):
