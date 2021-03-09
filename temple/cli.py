@@ -35,7 +35,7 @@ def main(ctx, version):
               help='Git SHA or branch of template to use for creation')
 def setup(template, version):
     """
-    Setup new project. Takes a full git SSH path to the template as returned
+    Setup new project. Takes a git path to the template as returned
     by "temple ls". In order to start a project from a
     particular version (instead of the latest), use the "-v" option.
     """

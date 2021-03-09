@@ -10,38 +10,27 @@ import temple.update
 
 
 @pytest.mark.parametrize(
-    'old_config, new_config, old_http_status, new_http_status, expected_has_changed',
+    'old_config, new_config, expected_has_changed',
     [
-        ('{"config": "same"}', '{"config": "same"}', http_codes.ok, http_codes.ok, False),
-        ('{"config": "same"}', '{"config": "diff"}', http_codes.ok, http_codes.ok, True),
-        pytest.param('', '', http_codes.not_found, http_codes.ok, None,
-                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
-        pytest.param('', '', http_codes.ok, http_codes.not_found, None,
-                     marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
+        ('{"config": "same"}', '{"config": "same"}', False),
+        ('{"config": "same"}', '{"config": "diff"}', True),
     ])
 def test_cookiecutter_configs_have_changed(old_config,
                                            new_config,
-                                           old_http_status,
-                                           new_http_status,
                                            expected_has_changed,
                                            mocker,
                                            responses):
     """Tests temple.update._cookiecutter_configs_have_changed"""
-    api = 'https://api.github.com/repos/org/template/contents/cookiecutter.json'
-    responses.add(responses.GET,
-                  '{}?ref=old'.format(api),
-                  json={'content': old_config},
-                  status=old_http_status,
-                  match_querystring=True)
-    responses.add(responses.GET,
-                  '{}?ref=new'.format(api),
-                  json={'content': new_config},
-                  status=new_http_status,
-                  match_querystring=True)
-
+    mock_clone = mocker.patch('temple.update.cc_vcs.clone', autospec=True, return_value='path')
+    mock_open = mocker.patch('temple.update.open')
+    mock_open().read.side_effect = [old_config, new_config]
+    mock_call = mocker.patch('subprocess.check_call', autospec=True)
     template = 'git@github.com:org/template.git'
+
     config_has_changed = temple.update._cookiecutter_configs_have_changed(template, 'old', 'new')
     assert config_has_changed == expected_has_changed
+    mock_clone.assert_called_once_with(template, 'old', mocker.ANY)
+    assert mock_call.call_count == 1
 
 
 @pytest.mark.parametrize('http_status', [
@@ -49,12 +38,12 @@ def test_cookiecutter_configs_have_changed(old_config,
     pytest.param(http_codes.not_found,
                  marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
 ])
-def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
+def test_get_latest_template_version_w_github(http_status, mocker, responses):
     """Tests temple.update._get_latest_template_version_w_git_api"""
     api = 'https://api.github.com/repos/owner/template/commits'
     responses.add(responses.GET, api, json=[{'sha': 'v1'}], status=http_status)
 
-    latest = temple.update._get_latest_template_version_w_git_api(
+    latest = temple.update._get_latest_template_version_w_github(
         'git@github.com:owner/template.git')
     assert latest == 'v1'
 
@@ -65,7 +54,7 @@ def test_get_latest_template_version_w_git_api(http_status, mocker, responses):
     pytest.param(b'\n', b'stderr_w_no_stdout_is_an_error', None,
                  marks=pytest.mark.xfail(raises=RuntimeError)),
 ])
-def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected):
+def test_get_latest_template_version_w_git(mocker, stdout, stderr, expected):
     """Tests temple.update._get_latest_template_version_w_git_ssh"""
     ls_remote_return = subprocess.CompletedProcess([], returncode=0, stdout=stdout,
                                                    stderr=stderr)
@@ -73,7 +62,7 @@ def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected)
                               autospec=True,
                               return_value=ls_remote_return)
 
-    assert temple.update._get_latest_template_version_w_git_ssh('t') == expected
+    assert temple.update._get_latest_template_version_w_git('t') == expected
     cmd = 'git ls-remote t | grep HEAD | cut -f1'
     mock_shell.assert_called_once_with(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -93,9 +82,9 @@ def test_get_latest_template_version_w_git_ssh(mocker, stdout, stderr, expected)
         marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
 ])
 def test_get_latest_template_version(mocker, git_ssh_side_effect, git_api_side_effect, expected):
-    mocker.patch('temple.update._get_latest_template_version_w_git_ssh',
+    mocker.patch('temple.update._get_latest_template_version_w_git',
                  autospec=True, side_effect=git_ssh_side_effect)
-    mocker.patch('temple.update._get_latest_template_version_w_git_api',
+    mocker.patch('temple.update._get_latest_template_version_w_github',
                  autospec=True, side_effect=git_api_side_effect)
 
     version = temple.update._get_latest_template_version('template')
