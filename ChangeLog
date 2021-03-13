@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+1.4.7
+-----
+
+* support https as well as ssh repositories (#12)
+
 1.4.6
 -----
 
