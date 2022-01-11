@@ -2,11 +2,19 @@
 import subprocess
 
 import pytest
-from requests import codes as http_codes
 import requests
 
 import temple.constants
+import temple.forge
 import temple.update
+
+
+def test_get_latest_template_version(mocker):
+    """Tests temple.update._get_latest_template_version"""
+    mock_get_latest_template_version =  mocker.patch.object(
+        temple.forge.Github, 'get_latest_template_version', autospec=True, return_value='v1'
+    )
+    assert temple.update._get_latest_template_version('git@github.com:org/template.git') == 'v1'
 
 
 @pytest.mark.parametrize(
@@ -31,64 +39,6 @@ def test_cookiecutter_configs_have_changed(old_config,
     assert config_has_changed == expected_has_changed
     mock_clone.assert_called_once_with(template, 'old', mocker.ANY)
     assert mock_call.call_count == 1
-
-
-@pytest.mark.parametrize('http_status', [
-    http_codes.ok,
-    pytest.param(http_codes.not_found,
-                 marks=pytest.mark.xfail(raises=requests.exceptions.HTTPError)),
-])
-def test_get_latest_template_version_w_github(http_status, mocker, responses):
-    """Tests temple.update._get_latest_template_version_w_git_api"""
-    api = 'https://api.github.com/repos/owner/template/commits'
-    responses.add(responses.GET, api, json=[{'sha': 'v1'}], status=http_status)
-
-    latest = temple.update._get_latest_template_version_w_github(
-        'git@github.com:owner/template.git')
-    assert latest == 'v1'
-
-
-@pytest.mark.parametrize('stdout, stderr, expected', [
-    (b'version\n', b'', 'version'),
-    (b'version\n', b'stderr_can_be_there_w_stdout', 'version'),
-    pytest.param(b'\n', b'stderr_w_no_stdout_is_an_error', None,
-                 marks=pytest.mark.xfail(raises=RuntimeError)),
-])
-def test_get_latest_template_version_w_git(mocker, stdout, stderr, expected):
-    """Tests temple.update._get_latest_template_version_w_git_ssh"""
-    ls_remote_return = subprocess.CompletedProcess([], returncode=0, stdout=stdout,
-                                                   stderr=stderr)
-    mock_shell = mocker.patch('temple.utils.shell',
-                              autospec=True,
-                              return_value=ls_remote_return)
-
-    assert temple.update._get_latest_template_version_w_git('t') == expected
-    cmd = 'git ls-remote t | grep HEAD | cut -f1'
-    mock_shell.assert_called_once_with(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-
-@pytest.mark.parametrize('git_ssh_side_effect, git_api_side_effect, expected', [
-    (['version'], None, 'version'),
-    (subprocess.CalledProcessError(returncode=1, cmd='cmd'), ['version'], 'version'),
-    pytest.param(
-        subprocess.CalledProcessError(returncode=1, cmd='cmd'),
-        requests.exceptions.RequestException,
-        None,
-        marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
-    pytest.param(
-        subprocess.CalledProcessError(returncode=1, cmd='cmd'),
-        temple.exceptions.InvalidEnvironmentError,
-        None,
-        marks=pytest.mark.xfail(raises=temple.exceptions.CheckRunError)),
-])
-def test_get_latest_template_version(mocker, git_ssh_side_effect, git_api_side_effect, expected):
-    mocker.patch('temple.update._get_latest_template_version_w_git',
-                 autospec=True, side_effect=git_ssh_side_effect)
-    mocker.patch('temple.update._get_latest_template_version_w_github',
-                 autospec=True, side_effect=git_api_side_effect)
-
-    version = temple.update._get_latest_template_version('template')
-    assert version == expected
 
 
 @pytest.mark.parametrize('existing_files', [True, False])

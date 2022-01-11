@@ -6,7 +6,7 @@ Temple provides templated project creation and management.
 The main functionality of temple includes:
 
 1. Creating new projects from `cookiecutter`_ templates.
-2. Listing all available templates under a github user / org along with all projects created from
+2. Listing all available templates under a git forge such as Github or Gitlab, along with listing all projects created from
    those templates.
 3. Keeping projects up to date with the template as it changes.
 

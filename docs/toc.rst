@@ -9,6 +9,5 @@ Table of Contents
    creating_templates
    cli
    package
-   future_work
    release_notes
    contributing

@@ -8,6 +8,7 @@ Commands
 * ``temple ls`` - Lists all templates and projects created with those templates
 * ``temple update`` - Updates the project to the latest template version
 * ``temple clean`` - Cleans up any temporary resources used by temple
+* ``temple switch`` - Switch a project to a different template
 """
 import click
 
@@ -77,21 +78,21 @@ def update(check, enter_parameters, version):
 
 
 @main.command()
-@click.argument('github_user', nargs=1, required=True)
+@click.argument('forge', nargs=1, required=True)
 @click.argument('template', nargs=1, required=False)
 @click.option('-l', '--long-format', is_flag=True,
               help='Print extended information about results')
-def ls(github_user, template, long_format):
+def ls(forge, template, long_format):
     """
-    List packages created with temple. Enter a github user or
-    organization to list all templates under the user or org.
-    Using a template path as the second argument will list all projects
+    List packages created with temple. Enter a git forge path, such as a Github
+    user or Gitlab group URL, to list all templates under the forge.
+    Provide the template path as the second argument to list all projects
     that have been started with that template.
 
-    Use "-l" to print the Github repository descriptions of templates
+    Use "-l" to print the repository descriptions of templates
     or projects.
     """
-    github_urls = temple.ls.ls(github_user, template=template)
+    github_urls = temple.ls.ls(forge, template=template)
     for ssh_path, info in github_urls.items():
         if long_format:
             print(ssh_path, '-', info['description'] or '(no project description found)')

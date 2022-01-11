@@ -6,27 +6,33 @@ Listing templates and projects
 
 Temple manages projects that are started from templates
 (specifically, `cookiecutter`_ templates).
-In order to see what templates are available for use within your Github org, do::
+In order to see what templates are available for use, do::
 
-    temple ls <github_org_name>
+    temple ls <forge>
 
-This will list all of the paths of templates that are available. Doing::
+This will list all of the paths of templates that are available under a particular git forge.
+A git forge can be:
 
-    temple ls <github_org_name> -l
+1. A Github user or organization, such as ``github.com/OrganizationName``
+2. A Gitlab group, such as ``gitlab.com/Group`` or ``gitlab.com/Nested/Group``
 
-will also display the description of the template.
+Doing::
+
+    temple ls <forge> -l
+
+will also display the extended description of the template.
 
 To list all projects created with a template (and the project's descriptions), take the
-template path from ``temple ls`` and use it as an argument like so::
+template path from ``temple ls`` and use it as the second argument like so::
 
-    temple ls <github_org_name> <git@github.com:user/cookiecutter-template.git> -l
+    temple ls <forge> <git@github.com:user/cookiecutter-template-path.git> -l
 
 Starting new projects
 ~~~~~~~~~~~~~~~~~~~~~
 
 A new project can be set up from a template with::
 
-    temple setup <git@github.com:user/cookiecutter-template.git>
+    temple setup <template_path>
 
 What happens next is dependent on how the template is configured. By default, `cookiecutter`_ will
 prompt the user for template parameters, defined in the ``cookiecutter.json`` file of the template
@@ -36,8 +42,7 @@ happen that are specific to the type of project being started.
 Keeping your project up to date with the latest template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once a project is set up and published to Github, temple-created projects can be listed with the ``temple ls``
-command. If a template is ever updated, changes can be pulled into a project with::
+If a template is ever updated, changes can be pulled into a temple-created project with::
 
     temple update
 
@@ -63,7 +68,7 @@ Switching your project to another template
 Sometimes it is desirable to switch a project to another template, like when open sourcing a private package.
 Projects can be switched to another template with::
 
-	temple switch <git@github.com/user/new-template-path.git>
+	temple switch <template_path>
 
 Similar to ``temple update``, you will need to review the changes, resolve conflicts, and then ``git add`` and
 ``git push`` these changes.

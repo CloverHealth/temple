@@ -17,6 +17,7 @@ import requests
 
 import temple.check
 import temple.constants
+import temple.forge
 import temple.utils
 
 
@@ -44,61 +45,6 @@ def _cookiecutter_configs_have_changed(template, old_version, new_version):
     return old_config != new_config
 
 
-def _get_latest_template_version_w_git(template):
-    """
-    Tries to obtain the latest template version using an SSH key
-    """
-    cmd = 'git ls-remote {} | grep HEAD | cut -f1'.format(template)
-    ret = temple.utils.shell(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stderr = ret.stderr.decode('utf-8').strip()
-    stdout = ret.stdout.decode('utf-8').strip()
-    if stderr and not stdout:
-        raise RuntimeError((
-            'An unexpected error happened when running "{}". (stderr="{}"'
-        ).format(cmd, stderr))
-    return stdout
-
-
-def _get_latest_template_version_w_github(template):
-    """Tries to obtain the latest template version with the Github API"""
-    temple.check.has_env_vars(temple.constants.GITHUB_API_TOKEN_ENV_VAR)
-
-    repo_path = temple.utils.get_repo_path(template)
-    api = '/repos/{}/commits'.format(repo_path)
-    github_client = temple.utils.GithubClient()
-
-    last_commit_resp = github_client.get(api, params={'per_page': 1})
-    last_commit_resp.raise_for_status()
-
-    content = last_commit_resp.json()
-    assert len(content) == 1, 'Unexpected Github API response'
-    return content[0]['sha']
-
-
-def _get_latest_template_version(template):
-    """Retrieves the latest template SHA
-
-    Returns:
-        str: The latest template version
-    """
-    try:
-        latest_version = _get_latest_template_version_w_git(template)
-    except (subprocess.CalledProcessError, RuntimeError):
-        try:
-            latest_version = _get_latest_template_version_w_github(template)
-        except (requests.exceptions.RequestException,
-                temple.exceptions.InvalidEnvironmentError) as exc:
-            raise temple.exceptions.CheckRunError((
-                'Could not obtain the latest template version of "{}"'
-                ' using git SSH key or the configured Github API token.'
-                ' Set either a "GITHUB_API_TOKEN" environment variable'
-                ' with access to the template or obtain permission so that'
-                ' the git SSH key can access it.'
-            ).format(template)) from exc
-
-    return latest_version
-
-
 def _apply_template(template, target, *, checkout, extra_context):
     """Apply a template to a temporary directory and then copy results to target."""
     with tempfile.TemporaryDirectory() as tempdir:
@@ -119,6 +65,12 @@ def _apply_template(template, target, *, checkout, extra_context):
                 if os.path.exists(dst):
                     os.remove(dst)
                 shutil.copy2(src, dst)
+
+
+def _get_latest_template_version(template):
+    """Obtains the latest template version from the appropriate git forge"""
+    client = temple.forge.from_path(template)
+    return client.get_latest_template_version(template)
 
 
 @temple.utils.set_cmd_env_var('update')
@@ -217,7 +169,6 @@ def update(old_template=None, old_version=None, new_template=None, new_version=N
     temple.check.is_temple_project()
     temple.check.not_has_branch(update_branch)
     temple.check.not_has_branch(temp_update_branch)
-    temple.check.has_env_vars(temple.constants.GITHUB_API_TOKEN_ENV_VAR)
 
     temple_config = temple.utils.read_temple_config()
     old_template = old_template or temple_config['_template']

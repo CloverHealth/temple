@@ -100,29 +100,3 @@ def set_cmd_env_var(value):
             return ret_val
         return wrapper
     return func_decorator
-
-
-class GithubClient():
-    """Utility client for accessing Github API
-
-    Supports using an API token or basic auth
-    """
-    def __init__(self, auth=None):
-        self.api_token = os.environ[temple.constants.GITHUB_API_TOKEN_ENV_VAR]
-
-    def _call_api(self, verb, url, **request_kwargs):
-        """Perform a github API call
-
-        Args:
-            verb (str): Can be "post", "put", or "get"
-            url (str): The base URL with a leading slash for Github API (v3)
-            auth (str or HTTPBasicAuth): A Github API token or a HTTPBasicAuth object
-        """
-        api = 'https://api.github.com{}'.format(url)
-        auth_headers = {'Authorization': 'token {}'.format(self.api_token)}
-        headers = {**auth_headers, **request_kwargs.pop('headers', {})}
-        return getattr(requests, verb)(api, headers=headers, **request_kwargs)
-
-    def get(self, url, **request_kwargs):
-        """Github API get"""
-        return self._call_api('get', url, **request_kwargs)

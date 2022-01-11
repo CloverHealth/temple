@@ -19,11 +19,6 @@ def is_git_ssh_path(template_path):
             'The template path must be a git SSH url (e.g. "git@github.com:user/template.git")')
 
 
-def get_name_from_ssh_path(template_path):
-    matches = re.search(r"\/([^/]+)\.git$", template_path)
-    return matches.group(1)
-
-
 def _in_git_repo():
     """Returns True if inside a git repo, False otherwise"""
     ret = temple.utils.shell('git rev-parse', stderr=subprocess.DEVNULL, check=False)

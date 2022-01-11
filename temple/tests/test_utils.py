@@ -94,7 +94,7 @@ def test_get_cookiecutter_config(default_config, mocker):
                                         return_value=prompted_context)
 
     assert (
-        temple.utils.get_cookiecutter_config('t', default_config=default_config) ==
+        temple.utils.get_cookiecutter_config('t', default_config=default_config) ==  # noqa
         ('repo_dir', prompted_context)
     )
     mock_get_user_conf.assert_called_once_with()

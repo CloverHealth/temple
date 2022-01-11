@@ -38,8 +38,8 @@ class InvalidEnvironmentError(Error):
     """Thrown when required environment variables are not set"""
 
 
-class InvalidGithubUserError(Error):
-    """An invalid github user was passed to ls."""
+class InvalidRootError(Error):
+    """An invalid root was passed to ls."""
 
 
 class InvalidTemplatePathError(Error):
