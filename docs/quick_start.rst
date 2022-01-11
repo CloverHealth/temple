@@ -27,6 +27,17 @@ template path from ``temple ls`` and use it as the second argument like so::
 
     temple ls <forge> <git@github.com:user/cookiecutter-template-path.git> -l
 
+.. note::
+
+    Be sure to provision a ``GITHUB_API_TOKEN`` or a ``GITLAB_API_TOKEN`` environment
+    variable in order for this command to work. The environment variable needs to contain
+    a personal access token to the appropriate forge.
+
+.. note::
+
+    This command only works with Gitlab when advanced search is enabled. See
+    more `here <https://docs.gitlab.com/ee/user/search/advanced_search.html>`_.
+
 Starting new projects
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -46,7 +57,8 @@ If a template is ever updated, changes can be pulled into a temple-created proje
 
     temple update
 
-This will git merge the template changes into your repository. You will need to review the changes, resolve
+This will git merge the template changes into your repository into a special ``_temple_update`` branch.
+You will need to review the changes, resolve
 conflicts, and then ``git add`` and ``git push`` these changes yourself.
 
 Sometimes it is desired that projects always remain up to date with the latest template - for example, ensuring
@@ -61,6 +73,11 @@ being deployed.
 .. note::
 
 	Updating your project with the latest template does not result in `cookiecutter hooks`_ being executed again.
+
+.. note::
+
+    If a ``_temple_update`` branch already exists from a previous update, call ``temple clean`` to delete the
+    branch.
 
 Switching your project to another template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

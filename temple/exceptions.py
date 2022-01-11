@@ -52,3 +52,7 @@ class ExistingBranchError(Error):
 
 class InvalidCurrentBranchError(Error):
     """Thrown when a command cannot run because of the current git branch"""
+
+
+class InvalidGitlabGroupError(Error):
+    """Thrown when an invalid Gitlab group is provided"""

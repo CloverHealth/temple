@@ -13,7 +13,6 @@ import textwrap
 
 import cookiecutter.main as cc_main
 import cookiecutter.vcs as cc_vcs
-import requests
 
 import temple.check
 import temple.constants

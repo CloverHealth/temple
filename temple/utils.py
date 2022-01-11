@@ -8,7 +8,6 @@ import cookiecutter.config as cc_config
 import cookiecutter.generate as cc_generate
 import cookiecutter.prompt as cc_prompt
 import cookiecutter.repository as cc_repository
-import requests
 import yaml
 
 import temple.constants

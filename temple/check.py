@@ -1,6 +1,5 @@
 """Utilities for performing checks and throwing useful error messages"""
 import os
-import re
 import subprocess
 
 import temple.constants

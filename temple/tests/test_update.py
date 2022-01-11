@@ -2,7 +2,6 @@
 import subprocess
 
 import pytest
-import requests
 
 import temple.constants
 import temple.forge
@@ -11,7 +10,7 @@ import temple.update
 
 def test_get_latest_template_version(mocker):
     """Tests temple.update._get_latest_template_version"""
-    mock_get_latest_template_version =  mocker.patch.object(
+    mocker.patch.object(
         temple.forge.Github, 'get_latest_template_version', autospec=True, return_value='v1'
     )
     assert temple.update._get_latest_template_version('git@github.com:org/template.git') == 'v1'

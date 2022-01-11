@@ -94,8 +94,8 @@ def test_update_check(version, up_to_date_return, capsys, mocker):
 def test_ls(ls_args, expected_out, capsys, mocker):
     """Verify ls prints results properly"""
     mocker.patch('temple.ls.ls', autospec=True, return_value=collections.OrderedDict([
-        ('ls', {'description': 'ls descr'}),
-        ('values', {'description': ''}),
+        ('ls', 'ls descr'),
+        ('values', '(no project description found)'),
     ]))
     mocker.patch.object(sys, 'argv', ls_args)
 

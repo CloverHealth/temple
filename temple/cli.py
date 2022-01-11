@@ -92,10 +92,10 @@ def ls(forge, template, long_format):
     Use "-l" to print the repository descriptions of templates
     or projects.
     """
-    github_urls = temple.ls.ls(forge, template=template)
-    for ssh_path, info in github_urls.items():
+    results = temple.ls.ls(forge, template=template)
+    for ssh_path, description in results.items():
         if long_format:
-            print(ssh_path, '-', info['description'] or '(no project description found)')
+            print(ssh_path, '-', description)
         else:
             print(ssh_path)
 

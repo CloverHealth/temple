@@ -7,14 +7,14 @@ Under the hood, temple uses `cookiecutter <https://cookiecutter.readthedocs.io/e
 input about a project and then spin up a local directory with the project scaffolding. In order to learn
 more about how to make your own cookiecutter template, consult the `cookiecutter docs <https://cookiecutter.readthedocs.io/en/latest/>`_.
 
-After you have created a template and published it to Github, it will be displayed with ``temple ls``
-and can also be used by ``temple setup``. There is no additional setup required. Make sure the description of your repo is filled in
-on Github, because that will be returned when users type ``temple ls -l``.
+After you have created a template and published it to Github or Gitlab, it will be displayed with ``temple ls``
+and can also be used by ``temple setup``. There is no additional setup required. Make sure the description of your repo is filled in,
+because that will be returned when users type ``temple ls -l``.
 
 Making Project Creation Seamless with Cookiecutter Hooks
 --------------------------------------------------------
 
-Once you have created a cookiecutter template and published it to Github, it will work with temple out of the box, but there are
+Once you have created a cookiecutter template and published it, it will work with temple out of the box, but there are
 ways to make project setup even more seamless.
 
 For example, say a cookiecutter template has been created at git@github.com:user/cookiecutter-template.git. When the user calls

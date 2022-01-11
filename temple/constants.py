@@ -15,6 +15,9 @@ TEMPLE_CONFIG_FILE = 'temple.yaml'
 #: The Github API token environment variable
 GITHUB_API_TOKEN_ENV_VAR = 'GITHUB_API_TOKEN'
 
+#: The Gitlab API token environment variable
+GITLAB_API_TOKEN_ENV_VAR = 'GITLAB_API_TOKEN'
+
 #: Temple docs URL
 TEMPLE_DOCS_URL = 'https://github.com/CloverHealth/temple'
 
