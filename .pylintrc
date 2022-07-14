@@ -25,6 +25,9 @@ disable=bad-continuation,
     too-many-arguments,
     unused-argument,
     wrong-import-order,
+    consider-using-f-string,
+    consider-using-with,
+    unspecified-encoding
 
 
 [REPORTS]
