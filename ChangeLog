@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+1.4.8
+-----
+
+* Fix the compatibility with latest cookiecutter (#14)
+
 1.4.7
 -----
 
